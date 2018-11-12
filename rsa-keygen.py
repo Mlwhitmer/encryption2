@@ -4,13 +4,25 @@ from Crypto import Random
 from Crypto import Util
 import argparse
 
-def inverse(a, n):
-    a = a % n
-    for x in range(1, n):
-        if ((a * x) % n == 1):
-            return x
+# def inverse(a, n):
+#     a = a % n
+#     for x in range(1, n):
+#         if ((a * x) % n == 1):
+#             return x
+#
+#     print('modular inverse does not exist')
+#     return 1
 
-    print('modular inverse does not exist')
+def inverse(e, Zn):
+
+    r = Zn % e
+
+    while not r == 1:
+        Zn = e
+        e = r
+        r = Zn % e
+
+    print("GOOD")
     return 1
 
 def find_gcd(a, b):
@@ -65,6 +77,10 @@ print("e: " + str(e))
 d = inverse(e, Zn)
 
 print("d: " + str(d))
+
+# d_calc = e % Zn
+#
+# print("d_calc: " + str(d_calc))
 
 print("public key = [N: " + str(N) + " e: " + str(e) + "]")
 print("private key = [N: " + str(N) + " d: " + str(d) + "]")
