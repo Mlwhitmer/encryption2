@@ -13,6 +13,38 @@ def inverse(a, n):
     print('modular inverse does not exist')
     return 1
 
+# def extended_euclidian():
+
+def modInverse(a, m):
+    m0 = m
+    y = 0
+    x = 1
+
+    if (m == 1):
+        return 0
+
+    while (a > 1):
+        # q is quotient
+        q = a // m
+
+        t = m
+
+        # m is remainder now, process
+        # same as Euclid's algo
+        m = a % m
+        a = t
+        t = y
+
+        # Update x and y
+        y = x - q * y
+        x = t
+
+        # Make x positive
+    if (x < 0):
+        x = x + m0
+
+    return x
+
 def find_gcd(a, b):
 
     if a > b:
@@ -62,12 +94,12 @@ while not find_gcd(e, Zn) == 1:
 
 print("e: " + str(e))
 
-d = inverse(e, Zn)
+d_calc= modInverse(e, Zn)
 
-print("d: " + str(d))
+print("d_calc: " + str(d_calc))
 
 print("public key = [N: " + str(N) + " e: " + str(e) + "]")
-print("private key = [N: " + str(N) + " d: " + str(d) + "]")
+print("private key = [N: " + str(N) + " d: " + str(d_calc) + "]")
 
 #Open write file stream for public key
 out = open(publicOutput, "w")
@@ -80,7 +112,7 @@ out.close()
 out = open(privateOutput, "w")
 out.write(str(n) + "\n")
 out.write(str(N) + "\n")
-out.write(str(d))
+out.write(str(d_calc))
 out.close()
 
 
