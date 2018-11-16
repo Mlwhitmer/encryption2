@@ -39,7 +39,7 @@ arr = bytearray.fromhex(plain)
 msg = [0x0, 0x2]
 rng = num/8 - 3 - len(arr)
 
-for i in range(0,int(rng)):
+for i in range(0, int(rng)):
 	rand_byte = os.urandom(1)
 	byte_int = int.from_bytes(rand_byte, byteorder = 'big')
 	if byte_int != 0:
@@ -50,6 +50,10 @@ msg.append(0x0)
 
 for i in arr:
 	msg.append(i)
+
+#reverse data so it is facing the right way for decryption
+msg.reverse()
+
 m = int.from_bytes(msg, byteorder='big')
 
 c = pow(m, e, N)
