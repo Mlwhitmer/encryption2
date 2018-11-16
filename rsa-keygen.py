@@ -25,6 +25,16 @@ def inverse(e, Zn):
     print("GOOD")
     return 1
 
+def extended_gcd(a, b):
+
+    while not a == 0:
+        b = a
+        a = b % a
+
+
+    return b
+
+
 def find_gcd(a, b):
 
     if a > b:
@@ -53,16 +63,9 @@ n = int(args.bitNumber)
 p = Util.number.getPrime(int(n/2))
 q = Util.number.getPrime(int(n/2))
 
-print("p: " + str(p))
-print("q: " + str(q))
-
 N = p * q
 
-print("N: " + str(N))
-
 Zn = (p-1)*(q-1)
-
-print("Zn: " + str(Zn))
 
 count = 0
 e = smallPrimeList[count]
@@ -72,18 +75,7 @@ while not find_gcd(e, Zn) == 1:
     count += 1
     e = smallPrimeList[count]
 
-print("e: " + str(e))
-
 d = inverse(e, Zn)
-
-print("d: " + str(d))
-
-# d_calc = e % Zn
-#
-# print("d_calc: " + str(d_calc))
-
-print("public key = [N: " + str(N) + " e: " + str(e) + "]")
-print("private key = [N: " + str(N) + " d: " + str(d) + "]")
 
 #Open write file stream for public key
 out = open(publicOutput, "w")
