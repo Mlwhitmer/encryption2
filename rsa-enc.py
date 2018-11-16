@@ -56,9 +56,34 @@ msg.reverse()
 
 m = int.from_bytes(msg, byteorder='big')
 
-c = pow(m, e, N)
+#c = pow(m, e, N)
+
+def mod(m,e,n):
+    if n == 1:
+        return 0
+    m = m % n
+    r = 1
+    while e > 0:
+        if e % 2 == 1:
+            r = (r*m) % n
+        e = e >> 1
+        m = m * m % n
+    return r
+'''
+def mod(m,e,n):
+    m = m % n
+    if e % 2 == 0:
+        return mod(m*m%n,e/2,n)
+    elif e == 1:
+        return m
+    elif e == 0:
+        return 1
+    else:
+        return m*mod(m,e-1,n)%n
+'''
+c = mod(m, e, N)
+#c = pow(m, e, N)
 
 output_I = open(output, "w")
-
 output_I.write(str(c))
 output_I.close()

@@ -23,6 +23,17 @@ def decode(c):
 
         return plain_text_bytes
 
+def mod(m,e,n):
+    if n == 1:
+        return 0
+    m = m % n
+    r = 1
+    while e > 0:
+        if e % 2 == 1:
+            r = (r*m) % n
+        e = e >> 1
+        m = m * m % n
+    return r
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-k','--keyfile',required = True)
@@ -40,7 +51,6 @@ if input is None or key is None or output is None:
 
 key_I = open(key,"r")
 
-
 nbits = int(key_I.readline())
 N = int(key_I.readline())
 d = int(key_I.readline())
@@ -49,7 +59,8 @@ key_I.close()
 input_I = open(input, "r")
 cipher = input_I.read()
 
-msg = pow(int(cipher), d, N)
+#msg = pow(int(cipher), d, N)
+msg = mod(int(cipher),d,N)
 
 #Get byte list for plain text and convert it to bytearray
 plain_text_byte_array = bytearray(decode(msg))
