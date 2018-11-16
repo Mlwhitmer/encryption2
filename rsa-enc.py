@@ -1,9 +1,25 @@
-from Crypto.Cipher import AES
-from Crypto.Util import Counter
 from Crypto import Random
 from Crypto import Util
 import argparse
-import random
+import struct
+import math
+import array
+import binascii
+
+def int_to_bytes(c):
+	plain_text_bytes = []
+
+	i = 0;
+	loaded_byte = 999
+
+	while loaded_byte != 0:
+		loaded_byte = (c >> (i * 8) & 0xff)
+		if loaded_byte != 0:
+			plain_text_bytes.append(loaded_byte)
+			i += 1
+
+	plain_text_bytes.reverse()
+	return plain_text_bytes
 
 cmd = argparse.ArgumentParser()
 cmd.add_argument('-k','--keyFile', required = True)
@@ -21,25 +37,33 @@ if inputFile is None or key is None or outputFile is None:
 
 
 #reading in the public key information
-inp = open(key,"r")
-n = inp.readline().strip()
+inp = open(key, "r")
+N_size = inp.readline().strip()
 N = inp.readline().strip()
-e = inp.readline().strip()
+d = inp.readline().strip()
 inp.close()
 
 #Cast read values to usable int
-n = int(n)
+N_size= int(N_size)
 N = int(N)
-e = int(e)
+e = int(d)
 
 
 #read in message
-inp = open(inputFile,"r")
+inp = open(inputFile, "r")
 m = inp.readline().strip()
 inp.close()
 
+#convert message to bytearray
+m = bytearray.fromhex(m)
+
+m_int = int.from_bytes(m, byteorder='big')
+
+#convert message bytearray to byte list for iterating later
+m = list(m)
+
 #Get r which is n/2
-r = Random.get_random_bytes(int(n/2))
+r = Random.get_random_bytes(int((N_size/8)/2))
 r = list(r)
 
 #We must get rid of all bytes 0x00 by replacing them with a randomly chosen byte
@@ -48,26 +72,33 @@ for i in range(len(r)):
 		replace = Random.get_random_bytes(1)
 		r[i] = int.from_bytes(replace, byteorder='big')
 
-
-k = 1
-while (not (2 ** (8 * (k - 1))) <= N) or (not N < 2 ** (8 * k)):
-	k += 1
-
-print(k)
-
-b = random.randint(0, 1)
-L = 8 * (k - 11) - 1
-print(L)
-
-c = []
-
-c.append(0)
-c.append(2)
+c = bytearray()
 
 #append random padding
 for i in range(len(r)):
-	if r[i] == 0:
-		c.append(r[i])
+	c.append(r[i])
 
+#Mark the end of the random bytes
 c.append(0)
-c.append(m)
+
+#append message
+for i in range(len(m)):
+	c.append(m[i])
+
+#reverse data so it is facing the right way for decryption
+c.reverse()
+
+#Convert c into something we can do math with
+c = int.from_bytes(c, byteorder='big')
+
+#Get ciphertext by encrypting
+cipher_text = pow(c, e, N)
+
+#Open write file stream for encrypted message
+out = open(outputFile, "w")
+out.write(str(cipher_text))
+out.close()
+
+
+
+
