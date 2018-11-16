@@ -1,6 +1,7 @@
 from Crypto.Cipher import AES
 from Crypto import Util
 import argparse
+import math
 
 PRIME_LIST = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199]
 
@@ -57,20 +58,15 @@ publicOutput = args.publicKeyFile
 privateOutput = args.secretKeyFile
 n = int(args.bitNumber)
 
-p = Util.number.getPrime(int(n/2))
-q = Util.number.getPrime(int(n/2))
-
-print("p: " + str(p))
-print("q: " + str(q))
+p = Util.number.getPrime(n)
+q = Util.number.getPrime(n)
 
 N = p * q
 
-print("N: " + str(N))
+#Get the size of N in bits
+N_bits = math.ceil(math.log(N, 2))
 
 Zn = (p-1)*(q-1)
-
-print("Zn: " + str(Zn))
-
 count = 0
 e = PRIME_LIST[count]
 
@@ -79,25 +75,18 @@ while not find_gcd(e, Zn) == 1:
     count += 1
     e = PRIME_LIST[count]
 
-print("e: " + str(e))
-
 d = inverse(e, Zn)
-
-print("d: " + str(d))
-
-print("public key = [N: " + str(N) + " e: " + str(e) + "]")
-print("private key = [N: " + str(N) + " d: " + str(d) + "]")
 
 #Open write file stream for public key
 out = open(publicOutput, "w")
-out.write(str(n) + "\n")
+out.write(str(N_bits) + "\n")
 out.write(str(N) + "\n")
 out.write(str(e))
 out.close()
 
 #Open write file stream for private key
 out = open(privateOutput, "w")
-out.write(str(n) + "\n")
+out.write(str(N_bits) + "\n")
 out.write(str(N) + "\n")
 out.write(str(d))
 out.close()
